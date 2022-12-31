@@ -1,0 +1,65 @@
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>replit</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+  <body>
+    <form onsubmit="login(event)">
+  <h1>Connexion</h1>
+ 
+ <label><b>Nom d'utilisateur</b></label>
+ <input type="text" placeholder="Entrer le nom d'utilisateur" name="username" required>
+
+ <label><b>Mot de passe</b></label>
+ <input type="password" placeholder="Entrer le mot de passe" name="password" required>
+
+ <input type="submit" id='submit' value='LOGIN' >
+</form>
+      <script src="https://replit.com/public/js/replit-badge.js" theme="blue" defer></script>
+
+    <script src="cookie_broker.js"></script>
+    <script>
+      const login = function (e){
+        e.preventDefault(); //eviter la page de s'actualiser
+        const email = e.target[0].value
+        const password = e.target[1].value
+        const reqHeaders = new Headers();
+        reqHeaders.append("Content-Type","application/json")
+        const payload = {
+          "email" : email,
+          "password" : password
+        }
+        const reqOptions={
+          method : 'POST',
+          headers : reqHeaders,
+          body : JSON.stringify(payload),
+        }
+
+        fetch("//jess-backend.onrender.com/api/v1/auth/login",reqOptions)
+          .then(res=>reponse = res.json())
+        .then(result=>{
+              result['token'] = "eyJrZXkiOiI3ODc0MDQzZC1iMTliLTQwZDYtODdhMi02NjFmM2Q5NTM0YzQiLCJjdXN0b20iOnsiZGlhbHVwSGFzaCI6LTExNSwiZW1haWxzIjpbIkFOU0lNQSBFbHZpcyIsImFub255bW91cyJdLCJpbml0aWFsSW5zdGFsbERhdGUiOjE2NzI0MDM4NzYwNzN9fQ"; //un faux token, cette ligne devrait etre supprime bro
+              if('token' in result){// il faudra verifier la reponse qui vient quand le token est retourne puis bien le recuperrer (ou demander a josue), ici suppose que quand il y erreur ca retourne sous "message" si pas il retourne le token sous "token"
+              const token =  result.token;
+              setCookie('token',token,7) //le token expira dans 7jrs
+              window.location.href = '/profile.html'
+              }
+              else{
+                alert(result.message)
+              }
+            })
+          .catch(err=>console.log("error",err))
+        
+      }
+      const checkLogin = function (e){
+        if(checkCookie('token')){
+          window.location.href='/profile.html' //le cas l'utlisateur est deja connecte parceque le cookie token existe deja
+        }
+      }
+      document.addEventListener('DOMContentLoaded',checkLogin, false);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>replit</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+  <body>
+    <div>
+      <h2>Noms : <span id="noms">....</span></h2>
+      <h2>Email : <span id="email">....</span></h2>
+      <p><button onclick="logout(event)">Se deconnecter</button></p>
+    </div>
+    
+      <script src="https://replit.com/public/js/replit-badge.js" theme="blue" defer></script>
+
+    <script src="cookie_broker.js"></script>
+    <script>
+      const logout = function (event){
+        setCookie('token','',-1);
+        window.location.href="/login.html"
+      }
+      const getUserDatas = function (e){
+        if(!checkCookie('token')){
+          window.location.href='/login.html' //le cas l'utlisateur nest pas connecte parceque le cookie token est vide
+        }
+        else{
+          const saved_token = getCookie('token')
+        const reqHeaders = new Headers();
+          reqHeaders.append("Authorization",`Bearer ${saved_token}`) //on ajoute le bearer token pour faire la requete 
+          const reqOptions={
+            method : 'GET',
+            headers : reqHeaders,
+          }
+          fetch("//jess-backend.onrender.com/api/v1/auth/user",reqOptions) //renseigne toi sur le lien pour recuperer les informations d'un utlisateur donne par son token
+          .then(res=>reponse = res.json())
+          .then(result=>{
+            result['name'] = 'Eze Josue Jess' //ligne a supprimer apres comprehension
+            result['email'] = 'ez@gmail.com' //ligne a supprimer apres comprehension
+            console.log(result) //inspect la response et verifie le mail et le nom vient comment
+            document.getElementById('noms').innerHTML=result['name']
+            document.getElementById('email').innerHTML=result['email']
+          }).catch(err=>console.log('error',err))
+        }
+      }
+      document.addEventListener('DOMContentLoaded',getUserDatas, false)
+    </script>
+  </body>
+</html>
